@@ -23,7 +23,6 @@
 #include "sched.h"
 
 #include <trace/hooks/sched.h>
-
 EXPORT_TRACEPOINT_SYMBOL_GPL(sched_stat_runtime);
 
 /*
@@ -39,13 +38,11 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(sched_stat_runtime);
  *
  * (default: 6ms * (1 + ilog(ncpus)), units: nanoseconds)
  */
-unsigned int sysctl_sched_latency			= 6000000ULL;
 #ifdef CONFIG_SCHED_BORE
-unsigned int sysctl_sched_latency			= 18000000ULL;
-static unsigned int normalized_sysctl_sched_latency	= 18000000ULL;
+unsigned int sysctl_sched_latency           = 18000000ULL;
+static unsigned int normalized_sysctl_sched_latency = 18000000ULL;
 #else // CONFIG_SCHED_BORE
-unsigned int sysctl_sched_latency			= 18000000ULL;
-static unsigned int normalized_sysctl_sched_latency	= 18000000ULL;
+unsigned int sysctl_sched_latency           = 6000000ULL;
 #endif // CONFIG_SCHED_BORE
 EXPORT_SYMBOL_GPL(sysctl_sched_latency);
 static unsigned int normalized_sysctl_sched_latency	= 6000000ULL;
@@ -61,31 +58,24 @@ static unsigned int normalized_sysctl_sched_latency	= 6000000ULL;
  *
  * (default SCHED_TUNABLESCALING_LOG = *(1+ilog(ncpus))
  */
-enum sched_tunable_scaling sysctl_sched_tunable_scaling = SCHED_TUNABLESCALING_LOG;
 #ifdef CONFIG_SCHED_BORE
 enum sched_tunable_scaling sysctl_sched_tunable_scaling = SCHED_TUNABLESCALING_NONE;
 #else // CONFIG_SCHED_BORE
-enum sched_tunable_scaling sysctl_sched_tunable_scaling = SCHED_TUNABLESCALING_NONE;
+enum sched_tunable_scaling sysctl_sched_tunable_scaling = SCHED_TUNABLESCALING_LOG;
 #endif // CONFIG_SCHED_BORE
-
 /*
  * Minimal preemption granularity for CPU-bound tasks:
  *
  * (default: 0.75 msec * (1 + ilog(ncpus)), units: nanoseconds)
  */
-<<<<<<< HEAD
-unsigned int sysctl_sched_min_granularity			= 750000ULL;
-=======
 #ifdef CONFIG_SCHED_BORE
 unsigned int sysctl_sched_min_granularity			= 2500000ULL;
 static unsigned int normalized_sysctl_sched_min_granularity	= 2500000ULL;
 #else // CONFIG_SCHED_BORE
 unsigned int sysctl_sched_min_granularity			= 2500000ULL;
-static unsigned int normalized_sysctl_sched_min_granularity	= 2500000ULL;
-#endif // CONFIG_SCHED_BORE
->>>>>>> f4888045998e (Vorpal CPUFreq Governor v2.0 — Complete rewrite from v1.0)
-EXPORT_SYMBOL_GPL(sysctl_sched_min_granularity);
 static unsigned int normalized_sysctl_sched_min_granularity	= 750000ULL;
+#endif // CONFIG_SCHED_BORE
+EXPORT_SYMBOL_GPL(sysctl_sched_min_granularity);
 
 /*
  * This value is kept at sysctl_sched_latency/sysctl_sched_min_granularity
@@ -97,8 +87,6 @@ static unsigned int sched_nr_latency = 8;
  * parent will (try to) run first.
  */
 unsigned int sysctl_sched_child_runs_first __read_mostly;
-<<<<<<< HEAD
-=======
 
 /*
  * Gaming mode integration with Vorpal governor.
@@ -109,7 +97,6 @@ EXPORT_SYMBOL_GPL(sched_gaming_active);
 #define GAMING_VRUNTIME_STRETCH         4
 #define GAMING_WAKEUP_GRANULARITY_NS    500000
 
->>>>>>> f4888045998e (Vorpal CPUFreq Governor v2.0 — Complete rewrite from v1.0)
 
 /*
  * SCHED_OTHER wake-up granularity.
@@ -125,9 +112,7 @@ static unsigned int normalized_sysctl_sched_wakeup_granularity	= 1000000UL;
 
 const_debug unsigned int sysctl_sched_migration_cost	= 500000UL;
 
-<<<<<<< HEAD
 int sched_thermal_decay_shift;
-=======
 /*
  * Default base time slice (request size r_i) for SCHED_NORMAL/SCHED_BATCH:
  *
@@ -137,7 +122,6 @@ int sched_thermal_decay_shift;
  * (default: 0.28 msec * (1 + ilog(ncpus)), units: nanoseconds)
  */
 unsigned int sysctl_sched_base_slice			= 2800000ULL;
-static unsigned int normalized_sysctl_sched_base_slice	= 2800000ULL;
 
 /*
  * Minimal preemption granularity for CPU-bound SCHED_IDLE tasks.
@@ -147,7 +131,6 @@ static unsigned int normalized_sysctl_sched_base_slice	= 2800000ULL;
  */
 unsigned int sysctl_sched_idle_min_granularity			= 750000ULL;
 
-const_debug unsigned int sysctl_sched_migration_cost	= 250000UL;
 
 #ifdef CONFIG_SCHED_BORE
 u8   __read_mostly sched_bore                   = 1;
@@ -170,7 +153,6 @@ uint __read_mostly sched_burst_cache_lifetime   = 25000000;
 
 
 int sched_thermal_decay_shift = 4;
->>>>>>> f4888045998e (Vorpal CPUFreq Governor v2.0 — Complete rewrite from v1.0)
 static int __init setup_sched_thermal_decay_shift(char *str)
 {
 	int _shift = 0;
@@ -961,9 +943,7 @@ static void update_curr(struct cfs_rq *cfs_rq)
 	schedstat_add(cfs_rq->exec_clock, delta_exec);
 
 	curr->vruntime += calc_delta_fair(delta_exec, curr);
-<<<<<<< HEAD
 	update_min_vruntime(cfs_rq);
-=======
 
 #ifdef CONFIG_SCHED_BORE
     curr->burst_time += delta_exec;
@@ -977,9 +957,9 @@ static void update_curr(struct cfs_rq *cfs_rq)
                             curr->avg.load_avg < 100)) {
                 curr->vruntime += calc_delta_fair(delta_exec, curr);
         }
-	resched = update_deadline(cfs_rq, curr);
->>>>>>> f4888045998e (Vorpal CPUFreq Governor v2.0 — Complete rewrite from v1.0)
-
+#ifdef CONFIG_SCHED_BORE
+	check_preempt_tick(cfs_rq, curr);
+#endif
 	if (entity_is_task(curr)) {
 		struct task_struct *curtask = task_of(curr);
 
